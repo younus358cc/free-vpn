@@ -17,7 +17,7 @@ class VPNApp {
     this.theme = localStorage.getItem('theme') || 'light';
     
     // Initialize connectivity tester
-    this.connectivityTester = new VPNConnectivityTester();
+    this.connectivityTester = window.connectivityTester || new VPNConnectivityTester();
     this.lastConnectivityTest = null;
     
     // Initialize premium upgrade manager
@@ -206,35 +206,53 @@ class VPNApp {
   // Setup event listeners
   setupEventListeners() {
     // Theme toggles
-    document.getElementById('theme-toggle')?.addEventListener('change', () => {
-      this.toggleTheme();
-    });
+    const themeToggle = document.getElementById('theme-toggle');
+    if (themeToggle) {
+      themeToggle.addEventListener('change', () => {
+        this.toggleTheme();
+      });
+    }
     
-    document.getElementById('header-theme-toggle')?.addEventListener('click', () => {
-      this.toggleTheme();
-    });
+    const headerThemeToggle = document.getElementById('header-theme-toggle');
+    if (headerThemeToggle) {
+      headerThemeToggle.addEventListener('click', () => {
+        this.toggleTheme();
+      });
+    }
 
     // Auth forms
-    document.getElementById('login-form')?.addEventListener('submit', (e) => {
-      e.preventDefault();
-      this.handleLogin();
-    });
+    const loginForm = document.getElementById('login-form');
+    if (loginForm) {
+      loginForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        this.handleLogin();
+      });
+    }
 
-    document.getElementById('register-form')?.addEventListener('submit', (e) => {
-      e.preventDefault();
-      this.handleRegister();
-    });
+    const registerForm = document.getElementById('register-form');
+    if (registerForm) {
+      registerForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        this.handleRegister();
+      });
+    }
 
     // Auth navigation
-    document.getElementById('show-register')?.addEventListener('click', (e) => {
-      e.preventDefault();
-      this.showRegisterScreen();
-    });
+    const showRegister = document.getElementById('show-register');
+    if (showRegister) {
+      showRegister.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.showRegisterScreen();
+      });
+    }
 
-    document.getElementById('show-login')?.addEventListener('click', (e) => {
-      e.preventDefault();
-      this.showLoginScreen();
-    });
+    const showLogin = document.getElementById('show-login');
+    if (showLogin) {
+      showLogin.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.showLoginScreen();
+      });
+    }
 
     // Password toggles
     document.querySelectorAll('.toggle-password').forEach(btn => {
@@ -253,9 +271,12 @@ class VPNApp {
     });
 
     // Connection button
-    document.getElementById('connection-button')?.addEventListener('click', () => {
-      this.toggleConnection();
-    });
+    const connectionButton = document.getElementById('connection-button');
+    if (connectionButton) {
+      connectionButton.addEventListener('click', () => {
+        this.toggleConnection();
+      });
+    }
 
     // Navigation
     document.querySelectorAll('.nav-item').forEach(item => {
@@ -274,23 +295,35 @@ class VPNApp {
     });
 
     // Refresh servers
-    document.getElementById('refresh-servers')?.addEventListener('click', () => {
-      this.refreshServers();
-    });
+    const refreshServers = document.getElementById('refresh-servers');
+    if (refreshServers) {
+      refreshServers.addEventListener('click', () => {
+        this.refreshServers();
+      });
+    }
 
     // Test connectivity button
-    document.getElementById('test-connectivity')?.addEventListener('click', () => {
-      this.testAllServersConnectivity();
-    });
+    const testConnectivity = document.getElementById('test-connectivity');
+    if (testConnectivity) {
+      testConnectivity.addEventListener('click', () => {
+        this.testAllServersConnectivity();
+      });
+    }
 
     // Logout buttons
-    document.getElementById('logout-btn')?.addEventListener('click', () => {
-      this.logout();
-    });
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', () => {
+        this.logout();
+      });
+    }
 
-    document.getElementById('profile-logout')?.addEventListener('click', () => {
-      this.logout();
-    });
+    const profileLogout = document.getElementById('profile-logout');
+    if (profileLogout) {
+      profileLogout.addEventListener('click', () => {
+        this.logout();
+      });
+    }
   }
 
   // Theme management
@@ -306,7 +339,9 @@ class VPNApp {
     
     if (headerThemeBtn) {
       const icon = headerThemeBtn.querySelector('i');
-      icon.className = this.theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+      if (icon) {
+        icon.className = this.theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+      }
     }
   }
 
@@ -319,46 +354,56 @@ class VPNApp {
   // Screen management
   showSplashScreen() {
     setTimeout(() => {
-      document.getElementById('splash-screen').classList.add('fade-out');
-      setTimeout(() => {
-        document.getElementById('splash-screen').classList.add('hidden');
-        if (this.isAuthenticated) {
-          this.showMainApp();
-        } else {
-          this.showLoginScreen();
-        }
-      }, 500);
+      const splashScreen = document.getElementById('splash-screen');
+      if (splashScreen) {
+        splashScreen.classList.add('fade-out');
+        setTimeout(() => {
+          splashScreen.classList.add('hidden');
+          if (this.isAuthenticated) {
+            this.showMainApp();
+          } else {
+            this.showLoginScreen();
+          }
+        }, 500);
+      }
     }, 2000);
   }
 
   showLoginScreen() {
     this.hideAllScreens();
-    document.getElementById('login-screen').classList.remove('hidden');
+    const loginScreen = document.getElementById('login-screen');
+    if (loginScreen) {
+      loginScreen.classList.remove('hidden');
+    }
   }
 
   showRegisterScreen() {
     this.hideAllScreens();
-    document.getElementById('register-screen').classList.remove('hidden');
+    const registerScreen = document.getElementById('register-screen');
+    if (registerScreen) {
+      registerScreen.classList.remove('hidden');
+    }
   }
 
   showMainApp() {
     this.hideAllScreens();
-    document.getElementById('main-app').classList.remove('hidden');
-    this.updateUI();
-    this.renderServers();
-    
-    // Initialize premium upgrade manager
-    if (!this.premiumUpgrade) {
-      this.premiumUpgrade = new PremiumUpgradeManager(this);
+    const mainApp = document.getElementById('main-app');
+    if (mainApp) {
+      mainApp.classList.remove('hidden');
+      this.updateUI();
+      this.renderServers();
+      
+      // Initialize premium upgrade manager
+      if (!this.premiumUpgrade && typeof PremiumUpgradeManager !== 'undefined') {
+        this.premiumUpgrade = new PremiumUpgradeManager(this);
+        this.premiumUpgrade.addUpgradeButtons();
+      }
+      
+      // Initialize help support manager
+      if (!this.helpSupport && typeof HelpSupportManager !== 'undefined') {
+        this.helpSupport = new HelpSupportManager(this);
+      }
     }
-    
-    // Initialize help support manager
-    if (!this.helpSupport) {
-      this.helpSupport = new HelpSupportManager(this);
-    }
-    
-    // Add upgrade buttons for free users
-    this.premiumUpgrade.addUpgradeButtons();
   }
 
   hideAllScreens() {
@@ -381,9 +426,14 @@ class VPNApp {
   }
 
   async handleLogin() {
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
     const loginBtn = document.getElementById('login-btn');
+    
+    if (!emailInput || !passwordInput || !loginBtn) return;
+    
+    const email = emailInput.value;
+    const password = passwordInput.value;
     
     if (!email || !password) {
       this.showToast('Please fill in all fields', 'error');
@@ -418,12 +468,20 @@ class VPNApp {
   }
 
   async handleRegister() {
-    const name = document.getElementById('reg-name').value;
-    const email = document.getElementById('reg-email').value;
-    const password = document.getElementById('reg-password').value;
-    const confirmPassword = document.getElementById('reg-confirm-password').value;
-    const acceptTerms = document.getElementById('accept-terms').checked;
+    const nameInput = document.getElementById('reg-name');
+    const emailInput = document.getElementById('reg-email');
+    const passwordInput = document.getElementById('reg-password');
+    const confirmPasswordInput = document.getElementById('reg-confirm-password');
+    const acceptTermsInput = document.getElementById('accept-terms');
     const registerBtn = document.getElementById('register-btn');
+
+    if (!nameInput || !emailInput || !passwordInput || !confirmPasswordInput || !acceptTermsInput || !registerBtn) return;
+
+    const name = nameInput.value;
+    const email = emailInput.value;
+    const password = passwordInput.value;
+    const confirmPassword = confirmPasswordInput.value;
+    const acceptTerms = acceptTermsInput.checked;
 
     if (!name || !email || !password || !confirmPassword) {
       this.showToast('Please fill in all fields', 'error');
@@ -500,8 +558,12 @@ class VPNApp {
     this.updateConnectionUI();
     
     const connectionBtn = document.getElementById('connection-button');
-    connectionBtn.querySelector('.button-content').classList.add('hidden');
-    connectionBtn.querySelector('.connection-loader').classList.remove('hidden');
+    if (connectionBtn) {
+      const buttonContent = connectionBtn.querySelector('.button-content');
+      const connectionLoader = connectionBtn.querySelector('.connection-loader');
+      if (buttonContent) buttonContent.classList.add('hidden');
+      if (connectionLoader) connectionLoader.classList.remove('hidden');
+    }
 
     try {
       // Step 1: Test server connectivity before connecting
@@ -549,8 +611,12 @@ class VPNApp {
       this.showToast(`Connection failed: ${error.message}`, 'error');
       console.error('VPN connection failed:', error);
     } finally {
-      connectionBtn.querySelector('.button-content').classList.remove('hidden');
-      connectionBtn.querySelector('.connection-loader').classList.add('hidden');
+      if (connectionBtn) {
+        const buttonContent = connectionBtn.querySelector('.button-content');
+        const connectionLoader = connectionBtn.querySelector('.connection-loader');
+        if (buttonContent) buttonContent.classList.remove('hidden');
+        if (connectionLoader) connectionLoader.classList.add('hidden');
+      }
     }
   }
 
@@ -559,8 +625,12 @@ class VPNApp {
     this.updateConnectionUI();
     
     const connectionBtn = document.getElementById('connection-button');
-    connectionBtn.querySelector('.button-content').classList.add('hidden');
-    connectionBtn.querySelector('.connection-loader').classList.remove('hidden');
+    if (connectionBtn) {
+      const buttonContent = connectionBtn.querySelector('.button-content');
+      const connectionLoader = connectionBtn.querySelector('.connection-loader');
+      if (buttonContent) buttonContent.classList.add('hidden');
+      if (connectionLoader) connectionLoader.classList.remove('hidden');
+    }
 
     // Simulate disconnection process
     await this.delay(2000);
@@ -571,8 +641,12 @@ class VPNApp {
     this.updateConnectionUI();
     this.hideConnectionTestResults();
     
-    connectionBtn.querySelector('.button-content').classList.remove('hidden');
-    connectionBtn.querySelector('.connection-loader').classList.add('hidden');
+    if (connectionBtn) {
+      const buttonContent = connectionBtn.querySelector('.button-content');
+      const connectionLoader = connectionBtn.querySelector('.connection-loader');
+      if (buttonContent) buttonContent.classList.remove('hidden');
+      if (connectionLoader) connectionLoader.classList.add('hidden');
+    }
     
     this.showToast('Disconnected from VPN', 'success');
   }
@@ -658,7 +732,9 @@ class VPNApp {
     `;
 
     const statsSection = document.getElementById('connection-stats');
-    statsSection.insertAdjacentHTML('afterend', resultsHTML);
+    if (statsSection) {
+      statsSection.insertAdjacentHTML('afterend', resultsHTML);
+    }
   }
 
   // Hide connection test results
@@ -718,9 +794,12 @@ class VPNApp {
 
   async refreshServers() {
     const refreshBtn = document.getElementById('refresh-servers');
-    const icon = refreshBtn.querySelector('i');
+    if (!refreshBtn) return;
     
-    icon.style.animation = 'spin 1s linear infinite';
+    const icon = refreshBtn.querySelector('i');
+    if (icon) {
+      icon.style.animation = 'spin 1s linear infinite';
+    }
     
     // Simulate server refresh
     await this.delay(2000);
@@ -732,7 +811,9 @@ class VPNApp {
     });
     
     this.renderServers();
-    icon.style.animation = '';
+    if (icon) {
+      icon.style.animation = '';
+    }
     this.showToast('Servers refreshed', 'success');
   }
 
@@ -741,20 +822,31 @@ class VPNApp {
     if (!this.currentUser) return;
 
     // Update user info
-    document.getElementById('user-name').textContent = this.currentUser.name;
-    document.getElementById('welcome-name').textContent = this.currentUser.name;
-    document.getElementById('profile-name').textContent = this.currentUser.name;
-    document.getElementById('profile-email').textContent = this.currentUser.email;
+    const userNameEl = document.getElementById('user-name');
+    const welcomeNameEl = document.getElementById('welcome-name');
+    const profileNameEl = document.getElementById('profile-name');
+    const profileEmailEl = document.getElementById('profile-email');
+    
+    if (userNameEl) userNameEl.textContent = this.currentUser.name;
+    if (welcomeNameEl) welcomeNameEl.textContent = this.currentUser.name;
+    if (profileNameEl) profileNameEl.textContent = this.currentUser.name;
+    if (profileEmailEl) profileEmailEl.textContent = this.currentUser.email;
     
     // Update status badge
     const statusBadge = document.getElementById('user-status');
-    statusBadge.textContent = this.currentUser.isPremium ? 'PREMIUM' : 'FREE';
-    statusBadge.className = `status-badge ${this.currentUser.isPremium ? 'premium' : ''}`;
+    if (statusBadge) {
+      statusBadge.textContent = this.currentUser.isPremium ? 'PREMIUM' : 'FREE';
+      statusBadge.className = `status-badge ${this.currentUser.isPremium ? 'premium' : ''}`;
+    }
     
     // Update profile stats
-    document.getElementById('account-type').textContent = this.currentUser.isPremium ? 'Premium' : 'Free';
-    document.getElementById('member-since').textContent = this.currentUser.memberSince;
-    document.getElementById('total-data').textContent = this.formatBytes(this.currentUser.totalDataUsed);
+    const accountTypeEl = document.getElementById('account-type');
+    const memberSinceEl = document.getElementById('member-since');
+    const totalDataEl = document.getElementById('total-data');
+    
+    if (accountTypeEl) accountTypeEl.textContent = this.currentUser.isPremium ? 'Premium' : 'Free';
+    if (memberSinceEl) memberSinceEl.textContent = this.currentUser.memberSince;
+    if (totalDataEl) totalDataEl.textContent = this.formatBytes(this.currentUser.totalDataUsed);
     
     this.updateConnectionUI();
     this.updateSelectedServerUI();
@@ -776,34 +868,44 @@ class VPNApp {
     const statsSection = document.getElementById('connection-stats');
 
     if (this.isConnected) {
-      statusCard.classList.add('connected');
-      protectionStatus.textContent = 'PROTECTED';
-      protectionMessage.textContent = 'Your connection is secure';
-      connectionStatus.textContent = 'protected';
-      connectionButton.classList.add('connected');
-      connectionButton.querySelector('i').className = 'fas fa-stop';
-      statsSection.classList.remove('hidden');
+      if (statusCard) statusCard.classList.add('connected');
+      if (protectionStatus) protectionStatus.textContent = 'PROTECTED';
+      if (protectionMessage) protectionMessage.textContent = 'Your connection is secure';
+      if (connectionStatus) connectionStatus.textContent = 'protected';
+      if (connectionButton) {
+        connectionButton.classList.add('connected');
+        const icon = connectionButton.querySelector('i');
+        if (icon) icon.className = 'fas fa-stop';
+      }
+      if (statsSection) statsSection.classList.remove('hidden');
     } else {
-      statusCard.classList.remove('connected');
-      protectionStatus.textContent = 'NOT PROTECTED';
-      protectionMessage.textContent = this.connectionStatus === 'connecting' ? 'Connecting...' : 
-                                     this.connectionStatus === 'disconnecting' ? 'Disconnecting...' : 
-                                     'Tap to connect to VPN';
-      connectionStatus.textContent = 'not protected';
-      connectionButton.classList.remove('connected');
-      
-      if (this.connectionStatus === 'connecting') {
-        connectionButton.classList.add('connecting');
-        connectionButton.querySelector('i').className = 'fas fa-hourglass-half';
-      } else if (this.connectionStatus === 'disconnecting') {
-        connectionButton.classList.add('connecting');
-        connectionButton.querySelector('i').className = 'fas fa-hourglass-half';
-      } else {
-        connectionButton.classList.remove('connecting');
-        connectionButton.querySelector('i').className = 'fas fa-power-off';
+      if (statusCard) statusCard.classList.remove('connected');
+      if (protectionStatus) protectionStatus.textContent = 'NOT PROTECTED';
+      if (protectionMessage) {
+        protectionMessage.textContent = this.connectionStatus === 'connecting' ? 'Connecting...' : 
+                                       this.connectionStatus === 'disconnecting' ? 'Disconnecting...' : 
+                                       'Tap to connect to VPN';
+      }
+      if (connectionStatus) connectionStatus.textContent = 'not protected';
+      if (connectionButton) {
+        connectionButton.classList.remove('connected');
+        
+        if (this.connectionStatus === 'connecting') {
+          connectionButton.classList.add('connecting');
+          const icon = connectionButton.querySelector('i');
+          if (icon) icon.className = 'fas fa-hourglass-half';
+        } else if (this.connectionStatus === 'disconnecting') {
+          connectionButton.classList.add('connecting');
+          const icon = connectionButton.querySelector('i');
+          if (icon) icon.className = 'fas fa-hourglass-half';
+        } else {
+          connectionButton.classList.remove('connecting');
+          const icon = connectionButton.querySelector('i');
+          if (icon) icon.className = 'fas fa-power-off';
+        }
       }
       
-      statsSection.classList.add('hidden');
+      if (statsSection) statsSection.classList.add('hidden');
     }
   }
 
@@ -811,52 +913,67 @@ class VPNApp {
     if (!this.selectedServer) return;
 
     const selectedServerCard = document.getElementById('selected-server');
+    if (!selectedServerCard) return;
+
     const flag = selectedServerCard.querySelector('.flag');
     const serverInfo = selectedServerCard.querySelector('.server-info');
     const loadDot = selectedServerCard.querySelector('.load-dot');
     const loadText = selectedServerCard.querySelector('.load-indicator span');
     const ping = selectedServerCard.querySelector('.ping');
 
-    flag.src = this.selectedServer.flagUrl;
-    flag.alt = this.selectedServer.country;
+    if (flag) {
+      flag.src = this.selectedServer.flagUrl;
+      flag.alt = this.selectedServer.country;
+    }
     
-    serverInfo.querySelector('h5').textContent = this.selectedServer.name;
-    serverInfo.querySelector('p').textContent = `${this.selectedServer.city}, ${this.selectedServer.country}`;
+    if (serverInfo) {
+      const h5 = serverInfo.querySelector('h5');
+      const p = serverInfo.querySelector('p');
+      if (h5) h5.textContent = this.selectedServer.name;
+      if (p) p.textContent = `${this.selectedServer.city}, ${this.selectedServer.country}`;
+    }
     
-    loadText.textContent = `${this.selectedServer.load}%`;
-    ping.textContent = `${this.selectedServer.ping}ms`;
+    if (loadText) loadText.textContent = `${this.selectedServer.load}%`;
+    if (ping) ping.textContent = `${this.selectedServer.ping}ms`;
     
     // Update load indicator color
-    loadDot.className = 'load-dot';
-    if (this.selectedServer.load < 30) {
-      loadDot.classList.add('low');
-    } else if (this.selectedServer.load < 70) {
-      loadDot.classList.add('medium');
-    } else {
-      loadDot.classList.add('high');
+    if (loadDot) {
+      loadDot.className = 'load-dot';
+      if (this.selectedServer.load < 30) {
+        loadDot.classList.add('low');
+      } else if (this.selectedServer.load < 70) {
+        loadDot.classList.add('medium');
+      } else {
+        loadDot.classList.add('high');
+      }
     }
   }
 
   updateStatsUI() {
-    document.getElementById('download-speed').textContent = this.formatSpeed(this.connectionStats.downloadSpeed);
-    document.getElementById('upload-speed').textContent = this.formatSpeed(this.connectionStats.uploadSpeed);
-    document.getElementById('total-download').textContent = this.formatBytes(this.connectionStats.totalDownload);
-    document.getElementById('total-upload').textContent = this.formatBytes(this.connectionStats.totalUpload);
+    const downloadSpeedEl = document.getElementById('download-speed');
+    const uploadSpeedEl = document.getElementById('upload-speed');
+    const totalDownloadEl = document.getElementById('total-download');
+    const totalUploadEl = document.getElementById('total-upload');
+
+    if (downloadSpeedEl) downloadSpeedEl.textContent = this.formatSpeed(this.connectionStats.downloadSpeed);
+    if (uploadSpeedEl) uploadSpeedEl.textContent = this.formatSpeed(this.connectionStats.uploadSpeed);
+    if (totalDownloadEl) totalDownloadEl.textContent = this.formatBytes(this.connectionStats.totalDownload);
+    if (totalUploadEl) totalUploadEl.textContent = this.formatBytes(this.connectionStats.totalUpload);
   }
 
   renderServers() {
     const freeServersContainer = document.getElementById('free-servers');
     const premiumServersContainer = document.getElementById('premium-servers');
 
-    freeServersContainer.innerHTML = '';
-    premiumServersContainer.innerHTML = '';
+    if (freeServersContainer) freeServersContainer.innerHTML = '';
+    if (premiumServersContainer) premiumServersContainer.innerHTML = '';
 
     this.servers.forEach(server => {
       const serverCard = this.createServerCard(server);
       
-      if (server.isPremium) {
+      if (server.isPremium && premiumServersContainer) {
         premiumServersContainer.appendChild(serverCard);
-      } else {
+      } else if (!server.isPremium && freeServersContainer) {
         freeServersContainer.appendChild(serverCard);
       }
     });
@@ -907,13 +1024,15 @@ class VPNApp {
     document.querySelectorAll('.nav-item').forEach(item => {
       item.classList.remove('active');
     });
-    document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+    const activeTab = document.querySelector(`[data-tab="${tabName}"]`);
+    if (activeTab) activeTab.classList.add('active');
 
     // Update content
     document.querySelectorAll('.tab-content').forEach(content => {
       content.classList.remove('active');
     });
-    document.getElementById(`${tabName}-tab`).classList.add('active');
+    const activeContent = document.getElementById(`${tabName}-tab`);
+    if (activeContent) activeContent.classList.add('active');
   }
 
   switchServerTab(tabName) {
@@ -921,11 +1040,15 @@ class VPNApp {
     document.querySelectorAll('.server-tab-btn').forEach(btn => {
       btn.classList.remove('active');
     });
-    document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+    const activeBtn = document.querySelector(`[data-tab="${tabName}"]`);
+    if (activeBtn) activeBtn.classList.add('active');
 
     // Update server lists
-    document.getElementById('free-servers').classList.toggle('hidden', tabName !== 'free');
-    document.getElementById('premium-servers').classList.toggle('hidden', tabName !== 'premium');
+    const freeServers = document.getElementById('free-servers');
+    const premiumServers = document.getElementById('premium-servers');
+    
+    if (freeServers) freeServers.classList.toggle('hidden', tabName !== 'free');
+    if (premiumServers) premiumServers.classList.toggle('hidden', tabName !== 'premium');
   }
 
   // Utility functions
@@ -934,18 +1057,20 @@ class VPNApp {
     const btnLoader = button.querySelector('.btn-loader');
     
     if (loading) {
-      btnText.classList.add('hidden');
-      btnLoader.classList.remove('hidden');
+      if (btnText) btnText.classList.add('hidden');
+      if (btnLoader) btnLoader.classList.remove('hidden');
       button.disabled = true;
     } else {
-      btnText.classList.remove('hidden');
-      btnLoader.classList.add('hidden');
+      if (btnText) btnText.classList.remove('hidden');
+      if (btnLoader) btnLoader.classList.add('hidden');
       button.disabled = false;
     }
   }
 
   showToast(message, type = 'success') {
     const container = document.getElementById('toast-container');
+    if (!container) return;
+    
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
     
@@ -961,7 +1086,9 @@ class VPNApp {
     container.appendChild(toast);
     
     setTimeout(() => {
-      toast.remove();
+      if (toast.parentNode) {
+        toast.remove();
+      }
     }, 4000);
   }
 
@@ -984,7 +1111,10 @@ class VPNApp {
   }
 }
 
-// Initialize the application
+// Make VPNApp available globally
+window.VPNApp = VPNApp;
+
+// Initialize the application when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-  new VPNApp();
+  window.vpnApp = new VPNApp();
 });

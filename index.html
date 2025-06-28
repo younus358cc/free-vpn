@@ -417,6 +417,26 @@
     <!-- Toast Notifications -->
     <div id="toast-container" class="toast-container"></div>
 
+    <!-- Scripts -->
+    <script>
+        // Initialize modules when they're loaded
+        window.addEventListener('DOMContentLoaded', function() {
+            // Initialize connectivity tester
+            if (typeof VPNConnectivityTester !== 'undefined') {
+                window.connectivityTester = new VPNConnectivityTester();
+            }
+            
+            // Initialize payment gateway
+            if (typeof BkashPaymentGateway !== 'undefined') {
+                window.bkashGateway = new BkashPaymentGateway();
+            }
+            
+            // Initialize main app
+            if (typeof VPNApp !== 'undefined') {
+                window.vpnApp = new VPNApp();
+            }
+        });
+    </script>
     <script src="src/js/connectivity-tester.js"></script>
     <script src="src/js/bkash-payment.js"></script>
     <script src="src/js/premium-upgrade.js"></script>
