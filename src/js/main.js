@@ -23,6 +23,9 @@ class VPNApp {
     // Initialize premium upgrade manager
     this.premiumUpgrade = null;
     
+    // Initialize help support manager
+    this.helpSupport = null;
+    
     this.init();
   }
 
@@ -347,6 +350,11 @@ class VPNApp {
     // Initialize premium upgrade manager
     if (!this.premiumUpgrade) {
       this.premiumUpgrade = new PremiumUpgradeManager(this);
+    }
+    
+    // Initialize help support manager
+    if (!this.helpSupport) {
+      this.helpSupport = new HelpSupportManager(this);
     }
     
     // Add upgrade buttons for free users
