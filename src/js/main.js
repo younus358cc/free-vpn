@@ -16,6 +16,10 @@ class VPNApp {
     };
     this.theme = localStorage.getItem('theme') || 'light';
     
+    // Initialize connectivity tester
+    this.connectivityTester = new VPNConnectivityTester();
+    this.lastConnectivityTest = null;
+    
     this.init();
   }
 
@@ -40,7 +44,9 @@ class VPNApp {
         isPremium: false,
         load: 25,
         ping: 15,
-        isActive: true
+        isActive: true,
+        ipAddress: '103.108.140.1',
+        port: 1194
       },
       {
         id: 'bd_chittagong_1',
@@ -51,7 +57,9 @@ class VPNApp {
         isPremium: false,
         load: 45,
         ping: 22,
-        isActive: true
+        isActive: true,
+        ipAddress: '103.108.141.1',
+        port: 1194
       },
       {
         id: 'sg_singapore_1',
@@ -62,7 +70,9 @@ class VPNApp {
         isPremium: false,
         load: 65,
         ping: 35,
-        isActive: true
+        isActive: true,
+        ipAddress: '139.180.132.1',
+        port: 1194
       },
       {
         id: 'in_mumbai_1',
@@ -73,7 +83,9 @@ class VPNApp {
         isPremium: false,
         load: 55,
         ping: 28,
-        isActive: true
+        isActive: true,
+        ipAddress: '139.59.1.1',
+        port: 1194
       },
       {
         id: 'us_newyork_1',
@@ -84,7 +96,9 @@ class VPNApp {
         isPremium: false,
         load: 75,
         ping: 180,
-        isActive: true
+        isActive: true,
+        ipAddress: '159.89.1.1',
+        port: 1194
       },
       // Premium Servers
       {
@@ -96,7 +110,9 @@ class VPNApp {
         isPremium: true,
         load: 15,
         ping: 8,
-        isActive: true
+        isActive: true,
+        ipAddress: '103.108.150.1',
+        port: 1194
       },
       {
         id: 'sg_singapore_premium',
@@ -107,7 +123,9 @@ class VPNApp {
         isPremium: true,
         load: 20,
         ping: 25,
-        isActive: true
+        isActive: true,
+        ipAddress: '139.180.150.1',
+        port: 1194
       },
       {
         id: 'us_newyork_premium',
@@ -118,7 +136,9 @@ class VPNApp {
         isPremium: true,
         load: 10,
         ping: 120,
-        isActive: true
+        isActive: true,
+        ipAddress: '159.89.150.1',
+        port: 1194
       },
       {
         id: 'uk_london_premium',
@@ -129,7 +149,9 @@ class VPNApp {
         isPremium: true,
         load: 18,
         ping: 140,
-        isActive: true
+        isActive: true,
+        ipAddress: '178.62.150.1',
+        port: 1194
       },
       {
         id: 'jp_tokyo_premium',
@@ -140,7 +162,9 @@ class VPNApp {
         isPremium: true,
         load: 25,
         ping: 85,
-        isActive: true
+        isActive: true,
+        ipAddress: '139.180.160.1',
+        port: 1194
       }
     ];
 
@@ -229,6 +253,11 @@ class VPNApp {
     // Refresh servers
     document.getElementById('refresh-servers')?.addEventListener('click', () => {
       this.refreshServers();
+    });
+
+    // Test connectivity button
+    document.getElementById('test-connectivity')?.addEventListener('click', () => {
+      this.testAllServersConnectivity();
     });
 
     // Logout buttons
@@ -412,7 +441,7 @@ class VPNApp {
     this.showLoginScreen();
   }
 
-  // VPN Connection
+  // VPN Connection with Connectivity Testing
   async toggleConnection() {
     if (!this.selectedServer) {
       this.showToast('Please select a server first', 'warning');
@@ -438,18 +467,55 @@ class VPNApp {
     connectionBtn.querySelector('.button-content').classList.add('hidden');
     connectionBtn.querySelector('.connection-loader').classList.remove('hidden');
 
-    // Simulate connection process
-    await this.delay(3000);
+    try {
+      // Step 1: Test server connectivity before connecting
+      this.showToast('Testing server connectivity...', 'warning');
+      const connectivityTest = await this.connectivityTester.testServerConnectivity(this.selectedServer);
+      
+      if (!connectivityTest.isReachable) {
+        throw new Error(`Server ${this.selectedServer.name} is not reachable: ${connectivityTest.error}`);
+      }
 
-    this.isConnected = true;
-    this.connectionStatus = 'connected';
-    this.updateConnectionUI();
-    this.startStatsMonitoring();
-    
-    connectionBtn.querySelector('.button-content').classList.remove('hidden');
-    connectionBtn.querySelector('.connection-loader').classList.add('hidden');
-    
-    this.showToast(`Connected to ${this.selectedServer.name}`, 'success');
+      this.showToast(`Server reachable (${connectivityTest.responseTime}ms)`, 'success');
+
+      // Step 2: Simulate VPN connection process
+      this.showToast('Establishing VPN connection...', 'warning');
+      await this.delay(2000);
+
+      // Step 3: Test if VPN is actually working
+      this.showToast('Verifying VPN connection...', 'warning');
+      const vpnTest = await this.connectivityTester.testVPNConnection(this.selectedServer);
+      
+      if (!vpnTest.isVPNActive) {
+        throw new Error('VPN connection failed - IP address did not change');
+      }
+
+      // Store test results
+      this.lastConnectivityTest = {
+        server: this.selectedServer,
+        connectivityTest,
+        vpnTest,
+        timestamp: new Date()
+      };
+
+      this.isConnected = true;
+      this.connectionStatus = 'connected';
+      this.updateConnectionUI();
+      this.startStatsMonitoring();
+      
+      // Show detailed connection info
+      this.showConnectionTestResults(vpnTest);
+      this.showToast(`Successfully connected to ${this.selectedServer.name}`, 'success');
+
+    } catch (error) {
+      this.connectionStatus = 'disconnected';
+      this.updateConnectionUI();
+      this.showToast(`Connection failed: ${error.message}`, 'error');
+      console.error('VPN connection failed:', error);
+    } finally {
+      connectionBtn.querySelector('.button-content').classList.remove('hidden');
+      connectionBtn.querySelector('.connection-loader').classList.add('hidden');
+    }
   }
 
   async disconnect() {
@@ -467,11 +533,104 @@ class VPNApp {
     this.connectionStatus = 'disconnected';
     this.stopStatsMonitoring();
     this.updateConnectionUI();
+    this.hideConnectionTestResults();
     
     connectionBtn.querySelector('.button-content').classList.remove('hidden');
     connectionBtn.querySelector('.connection-loader').classList.add('hidden');
     
     this.showToast('Disconnected from VPN', 'success');
+  }
+
+  // Test connectivity for all servers
+  async testAllServersConnectivity() {
+    const testBtn = document.getElementById('test-connectivity');
+    if (!testBtn) return;
+
+    const originalText = testBtn.innerHTML;
+    testBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Testing...';
+    testBtn.disabled = true;
+
+    this.showToast('Testing connectivity to all servers...', 'warning');
+
+    try {
+      const testPromises = this.servers.map(server => 
+        this.connectivityTester.testServerConnectivity(server)
+      );
+
+      const results = await Promise.all(testPromises);
+      
+      const successCount = results.filter(r => r.isReachable).length;
+      const totalCount = results.length;
+
+      this.showToast(`Connectivity test completed: ${successCount}/${totalCount} servers reachable`, 'success');
+      this.renderServers(); // Re-render with test results
+
+    } catch (error) {
+      this.showToast('Connectivity test failed', 'error');
+      console.error('Connectivity test error:', error);
+    } finally {
+      testBtn.innerHTML = originalText;
+      testBtn.disabled = false;
+    }
+  }
+
+  // Show connection test results
+  showConnectionTestResults(vpnTest) {
+    const existingResults = document.getElementById('connection-test-results');
+    if (existingResults) {
+      existingResults.remove();
+    }
+
+    const resultsHTML = `
+      <div id="connection-test-results" class="connection-test-results">
+        <h4><i class="fas fa-check-circle"></i> VPN Connection Verified</h4>
+        <div class="test-details">
+          <div class="test-item">
+            <span class="test-label">IP Changed:</span>
+            <span class="test-value ${vpnTest.isVPNActive ? 'success' : 'error'}">
+              ${vpnTest.isVPNActive ? 'Yes' : 'No'}
+            </span>
+          </div>
+          <div class="test-item">
+            <span class="test-label">Original IP:</span>
+            <span class="test-value">${vpnTest.originalIP || 'Unknown'}</span>
+          </div>
+          <div class="test-item">
+            <span class="test-label">VPN IP:</span>
+            <span class="test-value">${vpnTest.vpnIP || 'Unknown'}</span>
+          </div>
+          <div class="test-item">
+            <span class="test-label">DNS Leak Test:</span>
+            <span class="test-value ${vpnTest.dnsLeakTest ? 'success' : 'error'}">
+              ${vpnTest.dnsLeakTest ? 'Passed' : 'Failed'}
+            </span>
+          </div>
+          <div class="test-item">
+            <span class="test-label">Location Match:</span>
+            <span class="test-value ${vpnTest.ipLocationMatch ? 'success' : 'warning'}">
+              ${vpnTest.ipLocationMatch ? 'Verified' : 'Unverified'}
+            </span>
+          </div>
+          ${vpnTest.connectionSpeed ? `
+            <div class="test-item">
+              <span class="test-label">Speed Test:</span>
+              <span class="test-value">${vpnTest.connectionSpeed} Mbps</span>
+            </div>
+          ` : ''}
+        </div>
+      </div>
+    `;
+
+    const statsSection = document.getElementById('connection-stats');
+    statsSection.insertAdjacentHTML('afterend', resultsHTML);
+  }
+
+  // Hide connection test results
+  hideConnectionTestResults() {
+    const results = document.getElementById('connection-test-results');
+    if (results) {
+      results.remove();
+    }
   }
 
   startStatsMonitoring() {
@@ -667,11 +826,20 @@ class VPNApp {
     
     const loadDotClass = server.load < 30 ? 'low' : server.load < 70 ? 'medium' : 'high';
     
+    // Get connectivity test result
+    const testResult = this.connectivityTester.getTestResult(server.id);
+    const connectivityStatus = testResult ? 
+      (testResult.isReachable ? 
+        `<span class="connectivity-status success"><i class="fas fa-check-circle"></i> Online</span>` :
+        `<span class="connectivity-status error"><i class="fas fa-times-circle"></i> Offline</span>`) :
+      `<span class="connectivity-status unknown"><i class="fas fa-question-circle"></i> Unknown</span>`;
+    
     card.innerHTML = `
       <img src="${server.flagUrl}" alt="${server.country}" class="flag">
       <div class="server-info">
         <h5>${server.name} ${server.isPremium ? '<span style="color: #FFD700; font-size: 0.8em;">PRO</span>' : ''}</h5>
         <p>${server.city}, ${server.country}</p>
+        ${connectivityStatus}
       </div>
       <div class="server-stats">
         <div class="load-indicator">
@@ -679,6 +847,7 @@ class VPNApp {
           <span>${server.load}%</span>
         </div>
         <div class="ping">${server.ping}ms</div>
+        ${testResult && testResult.responseTime ? `<div class="response-time">${testResult.responseTime}ms</div>` : ''}
       </div>
     `;
 

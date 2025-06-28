@@ -274,10 +274,16 @@
             <div id="servers-tab" class="tab-content">
                 <div class="servers-header">
                     <h2>VPN Servers</h2>
-                    <button class="refresh-btn" id="refresh-servers">
-                        <i class="fas fa-sync-alt"></i>
-                        Refresh
-                    </button>
+                    <div class="servers-actions">
+                        <button class="refresh-btn" id="refresh-servers">
+                            <i class="fas fa-sync-alt"></i>
+                            Refresh
+                        </button>
+                        <button class="test-btn" id="test-connectivity">
+                            <i class="fas fa-network-wired"></i>
+                            Test All
+                        </button>
+                    </div>
                 </div>
 
                 <div class="server-tabs">
@@ -409,6 +415,7 @@
     <!-- Toast Notifications -->
     <div id="toast-container" class="toast-container"></div>
 
+    <script src="src/js/connectivity-tester.js"></script>
     <script src="src/js/main.js"></script>
 </body>
 </html>
