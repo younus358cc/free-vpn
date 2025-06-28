@@ -456,16 +456,41 @@
   background: #005A42 !important;
 }
 
-/* Help Button in Profile */
+/* Help Button in Profile - Enhanced Styling */
 .help-support-btn {
-  background: var(--primary-green) !important;
+  background: linear-gradient(135deg, #FF6B35, #F7931E) !important;
   color: white !important;
-  border-color: var(--primary-green) !important;
+  border: 2px solid #FF6B35 !important;
+  font-weight: 600 !important;
+  position: relative;
+  overflow: hidden;
 }
 
 .help-support-btn:hover {
-  background: #005A42 !important;
+  background: linear-gradient(135deg, #E55A2B, #E8841A) !important;
   color: white !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(255, 107, 53, 0.3);
+}
+
+.help-support-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.help-support-btn:hover::before {
+  left: 100%;
+}
+
+.help-support-btn i {
+  margin-right: var(--spacing-sm);
+  font-size: 1.1rem;
 }
 
 /* Responsive Design */
@@ -521,6 +546,10 @@
   .support-avatar i {
     font-size: 1.5rem;
   }
+  
+  .help-support-btn {
+    font-size: 0.9rem !important;
+  }
 }
 
 /* Animation for FAQ items */
@@ -537,4 +566,10 @@
 
 .faq-item-content p {
   animation: fadeInUp 0.3s ease;
+}
+
+/* Special styling for SOS emoji */
+.help-support-btn,
+.help-modal-header h3 {
+  font-family: 'Poppins', 'Noto Color Emoji', sans-serif;
 }

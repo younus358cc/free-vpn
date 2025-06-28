@@ -54,7 +54,7 @@ class HelpSupportManager {
       <div id="help-support-modal" class="help-modal-overlay">
         <div class="help-modal-content">
           <div class="help-modal-header">
-            <h3><i class="fas fa-life-ring"></i> সাহায্য ও সহায়তা</h3>
+            <h3><i class="fas fa-headset"></i> 🆘 সাহায্য ও সাপোর্ট</h3>
             <button class="close-help-modal">
               <i class="fas fa-times"></i>
             </button>
@@ -352,8 +352,8 @@ ${message}
       const helpButton = document.createElement('button');
       helpButton.className = 'profile-btn help-support-btn';
       helpButton.innerHTML = `
-        <i class="fas fa-life-ring"></i>
-        সাহায্য ও সহায়তা
+        <i class="fas fa-headset"></i>
+        🆘 সাহায্য ও সাপোর্ট
       `;
       
       // Insert before logout button
