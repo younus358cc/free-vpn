@@ -20,6 +20,9 @@ class VPNApp {
     this.connectivityTester = new VPNConnectivityTester();
     this.lastConnectivityTest = null;
     
+    // Initialize premium upgrade manager
+    this.premiumUpgrade = null;
+    
     this.init();
   }
 
@@ -340,6 +343,14 @@ class VPNApp {
     document.getElementById('main-app').classList.remove('hidden');
     this.updateUI();
     this.renderServers();
+    
+    // Initialize premium upgrade manager
+    if (!this.premiumUpgrade) {
+      this.premiumUpgrade = new PremiumUpgradeManager(this);
+    }
+    
+    // Add upgrade buttons for free users
+    this.premiumUpgrade.addUpgradeButtons();
   }
 
   hideAllScreens() {
@@ -739,6 +750,12 @@ class VPNApp {
     
     this.updateConnectionUI();
     this.updateSelectedServerUI();
+    
+    // Update premium badge visibility
+    const premiumBadge = document.querySelector('.premium-badge');
+    if (premiumBadge) {
+      premiumBadge.style.display = this.currentUser.isPremium ? 'none' : 'block';
+    }
   }
 
   updateConnectionUI() {
