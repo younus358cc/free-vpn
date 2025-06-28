@@ -27,8 +27,25 @@ class VPNApp {
     this.initializeServers();
     this.setupEventListeners();
     this.applyTheme();
+    this.captureOriginalIP();
     this.showSplashScreen();
     this.checkAuthStatus();
+  }
+
+  // Capture original IP at startup
+  async captureOriginalIP() {
+    const existingIP = localStorage.getItem('original_ip');
+    if (!existingIP) {
+      try {
+        const originalIP = await this.connectivityTester.getCurrentIP();
+        localStorage.setItem('original_ip', originalIP);
+        console.log('Original IP captured:', originalIP);
+      } catch (error) {
+        console.warn('Failed to capture original IP:', error);
+        // Fallback to a default IP for demo purposes
+        localStorage.setItem('original_ip', this.connectivityTester.generateMockIP('BD'));
+      }
+    }
   }
 
   // Initialize VPN servers data
