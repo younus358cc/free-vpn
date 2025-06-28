@@ -1,6 +1,69 @@
 name: free_vpn
+description: Professional VPN App for Bangladesh
 version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: ">=3.10.0"
+
 dependencies:
   flutter:
     sdk: flutter
+  
+  # VPN & Network
   openvpn_flutter: ^1.1.1
+  connectivity_plus: ^5.0.2
+  dio: ^5.3.2
+  
+  # UI & Design
+  cupertino_icons: ^1.0.6
+  flutter_svg: ^2.0.9
+  lottie: ^2.7.0
+  shimmer: ^3.0.0
+  
+  # State Management
+  provider: ^6.1.1
+  shared_preferences: ^2.2.2
+  
+  # Authentication & Security
+  crypto: ^3.0.3
+  encrypt: ^5.0.1
+  
+  # Maps & Location
+  google_maps_flutter: ^2.5.0
+  geolocator: ^10.1.0
+  
+  # Utils
+  intl: ^0.19.0
+  url_launcher: ^6.2.1
+  package_info_plus: ^4.2.0
+  device_info_plus: ^9.1.1
+  
+  # Charts & Analytics
+  fl_chart: ^0.65.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+  
+  assets:
+    - assets/
+    - assets/images/
+    - assets/icons/
+    - assets/animations/
+    - openvpn_config/
+  
+  fonts:
+    - family: Poppins
+      fonts:
+        - asset: assets/fonts/Poppins-Regular.ttf
+        - asset: assets/fonts/Poppins-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Poppins-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Poppins-Bold.ttf
+          weight: 700
